@@ -1,0 +1,9 @@
+# robots.txt for SparkleClean Pro
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://sparkleclean.pro/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

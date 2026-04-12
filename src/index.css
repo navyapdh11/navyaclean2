@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-white antialiased;
+    background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 50%, #000000 100%);
+  }
+
+  /* Light mode support */
+  @media (prefers-color-scheme: light) {
+    html:not(.dark) body {
+      background: radial-gradient(ellipse at top, #e8ecf1 0%, #f8fafc 50%, #ffffff 100%);
+      @apply text-gray-900;
+    }
+  }
+
+  ::selection {
+    @apply bg-neon-pink/30 text-white;
+  }
+
+  /* Focus-visible for keyboard navigation */
+  *:focus-visible {
+    @apply outline-none;
+    box-shadow: 0 0 0 3px rgba(0, 212, 230, 0.6), 0 0 0 1px rgba(0, 212, 230, 0.3);
+    border-radius: 4px;
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+}
+
+@layer components {
+  /* Glass Panel */
+  .glass-panel {
+    @apply backdrop-blur-xl rounded-2xl border border-glass-border bg-glass-bg;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Glass Input */
+  .glass-input {
+    @apply backdrop-blur-md rounded-xl border border-glass-border bg-white/5 text-white placeholder-white/50;
+    transition: all 0.3s ease;
+  }
+
+  .glass-input:focus {
+    @apply border-neon-blue/50 bg-white/10 outline-none;
+    box-shadow: 0 0 20px rgba(0, 212, 230, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Neon Button */
+  .glass-button-neon {
+    @apply backdrop-blur-md rounded-xl border border-neon-blue/30 bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 text-white font-semibold;
+    transition: all 0.3s ease;
+  }
+
+  .glass-button-neon:hover:not(:disabled) {
+    @apply border-neon-blue/60 bg-gradient-to-r from-neon-blue/40 to-neon-purple/40;
+    box-shadow: 0 0 30px rgba(0, 212, 230, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .glass-button-neon:active:not(:disabled) {
+    @apply scale-95;
+  }
+
+  /* Neon Checkbox */
+  .neon-checkbox {
+    @apply accent-neon-blue;
+    filter: drop-shadow(0 0 5px rgba(0, 212, 230, 0.5));
+  }
+
+  /* Glass Glow Effect */
+  .hover\\:glass-glow:hover {
+    box-shadow: 0 0 15px rgba(0, 212, 230, 0.3), 0 0 30px rgba(139, 92, 246, 0.2);
+    @apply border-neon-blue/40;
+  }
+
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink bg-clip-text text-transparent;
+  }
+
+  /* Animated Glow Border */
+  .glow-border {
+    position: relative;
+  }
+
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, #00d4e6, #8b5cf6, #e60073, #00d4e6);
+    background-size: 400% 400%;
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(8px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .glow-border::before {
+      animation: gradientShift 3s ease infinite;
+    }
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+}
+
+/* WebKit scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/30;
+}
+
+/* Reduced motion - disable all animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    @apply text-black;
+  }
+
+  .glass-panel,
+  .glass-input,
+  .glass-button-neon {
+    @apply bg-white border-gray-300 text-black;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .text-gradient {
+    @apply text-black;
+    background: none !important;
+  }
+
+  /* Hide 3D canvas and decorative elements */
+  .fixed,
+  [aria-label="Decorative 3D sparkle animation"] {
+    display: none !important;
+  }
+
+  /* Show phone/email in print */
+  footer a {
+    @apply text-blue-700;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    @apply text-gray-500;
+  }
+}
