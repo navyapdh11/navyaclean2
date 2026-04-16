@@ -62,10 +62,11 @@ interface LocalBusinessSchema {
   }[]
   priceRange: string
   areaServed: { '@type': 'State'; name: string }[]
-  aggregateRating: {
+  aggregateRating?: {
     '@type': 'AggregateRating'
     ratingValue: string
     reviewCount: string
+    ratingCount: string
     bestRating: string
     worstRating: string
   }
@@ -294,13 +295,8 @@ export function generateLocalBusinessSchema(): LocalBusinessSchema {
       { '@type': 'State', name: 'Australian Capital Territory' },
       { '@type': 'State', name: 'Northern Territory' },
     ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: SITE_CONFIG.rating.value,
-      reviewCount: SITE_CONFIG.rating.count,
-      bestRating: SITE_CONFIG.rating.best,
-      worstRating: SITE_CONFIG.rating.worst,
-    },
+    // Note: aggregateRating removed — Google requires third-party review backing.
+    // Re-add only when actual review data is available via a reviews API.
     sameAs: [
       SITE_CONFIG.social.facebook,
       SITE_CONFIG.social.instagram,
