@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Check, ArrowLeft, MapPin, Clock, DollarSign, Shield } from 'lucide-react'
-import { getServiceBySlug, type ServiceDefinition, type AustralianState, AU_STATES, STATE_CONFIG } from '../lib/services-au'
+import { getServiceBySlug, type ServiceDefinition, type AustralianState, AU_STATES, STATE_CONFIG, cleaningServices } from '../lib/services-au'
 import { getFAQsByService } from '../lib/faqs'
 import AdvancedPriceCalculator from '../components/calculator/AdvancedPriceCalculator'
 import FAQSection from '../components/content/FAQSection'
@@ -39,13 +39,49 @@ export default function ServicePage() {
   }
 
   if (!service) {
+    // Get all valid service slugs for suggestions
+    const validSlugs = Object.values(cleaningServices).map(s => s.slug)
+    const similarServices = validSlugs.filter(s => 
+      s.includes(slug) || slug.split(/[-\s]/).some(word => s.includes(word))
+    ).slice(0, 5)
+
     return (
       <div className="min-h-[60vh] flex items-center justify-center text-center px-4">
-        <div>
+        <div className="max-w-lg">
           <h1 className="text-6xl font-black text-gradient mb-4">404</h1>
-          <p className="text-xl text-white/70 mb-6">Service not found</p>
+          <p className="text-xl text-white/70 mb-2">Service &quot;{slug}&quot; not found</p>
+          <p className="text-sm text-white/50 mb-6">
+            This service may not be available. Here are some popular options:
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {Object.values(cleaningServices).slice(0, 8).map((s) => (
+              <Link
+                key={s.id}
+                to={`/service/${s.slug}/${state}`}
+                className="glass-input px-3 py-1.5 text-sm rounded hover:bg-white/10 transition-colors"
+              >
+                {s.icon} {s.name}
+              </Link>
+            ))}
+          </div>
+          {similarServices.length > 0 && (
+            <div className="mb-6">
+              <p className="text-sm text-neon-blue mb-2">Similar services you might be looking for:</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {similarServices.map((s) => (
+                  <Link
+                    key={s}
+                    to={`/service/${s}/${state}`}
+                    className="px-3 py-1.5 bg-neon-blue/20 border border-neon-blue/40 text-neon-blue text-sm rounded hover:bg-neon-blue/30 transition-colors"
+                  >
+                    {s}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           <Link to="/services" className="glass-button-neon px-6 py-3">
-            Back to Services
+            Browse All Services
           </Link>
         </div>
       </div>
