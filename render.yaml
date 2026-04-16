@@ -1,0 +1,16 @@
+services:
+  - type: static
+    name: sparkleclean-pro
+    repo: https://github.com/navyapdh11/sparkleclean-pro
+    branch: main
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false

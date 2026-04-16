@@ -7,18 +7,24 @@ import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import HomePage from './pages/HomePage'
 import ServicesPage from './pages/ServicesPage'
+import ServicePage from './pages/ServicePage'
+import ServiceCityPage from './pages/ServiceCityPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import CancellationPage from './pages/CancellationPage'
+import InstallPrompt from './components/pwa/InstallPrompt'
+import { usePWA } from './hooks/usePWA'
 
 // Keep the original App as the booking page
 import QuoteBuilderApp from './App'
 
-export default function AppRouter() {
+function AppContent() {
+  const { isInstallable, handleInstall, dismissInstall } = usePWA()
+
   return (
-    <BrowserRouter>
+    <>
       <div className="min-h-screen relative">
         <Header />
         <main id="main-content" className="relative z-10">
@@ -26,12 +32,13 @@ export default function AppRouter() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/service/:slug/:state" element={<ServicePage />} />
+              <Route path="/service/:slug/:state/:city" element={<ServiceCityPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/cancellation" element={<CancellationPage />} />
-              {/* Quote builder keeps original App.tsx at /booking */}
               <Route path="/booking" element={<QuoteBuilderApp />} />
               {/* 404 */}
               <Route path="*" element={
@@ -48,6 +55,19 @@ export default function AppRouter() {
         </main>
         <Footer />
       </div>
+
+      {/* PWA Install Prompt */}
+      {isInstallable && (
+        <InstallPrompt onInstall={handleInstall} onDismiss={dismissInstall} />
+      )}
+    </>
+  )
+}
+
+export default function AppRouter() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   )
 }

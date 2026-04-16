@@ -1,5 +1,6 @@
 import type { QuoteForm } from '../lib/schema'
 import { submitQuoteToSupabase } from './supabase-client'
+import { triggerQuoteWebhook } from './email-notifications'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
@@ -19,6 +20,7 @@ export interface QuoteResponse {
 /**
  * Submit quote request — tries Supabase first, then external API, then dev fallback.
  * Priority: Supabase > External API > console.log (dev)
+ * Automatically triggers email notification via webhook
  */
 export async function submitQuoteRequest(data: QuoteForm, quote: number): Promise<QuoteResponse> {
   const payload: QuoteSubmission = {
@@ -35,6 +37,14 @@ export async function submitQuoteRequest(data: QuoteForm, quote: number): Promis
     try {
       const result = await submitQuoteToSupabase(data, quote)
       if (result.success) {
+        // Trigger email notification via webhook
+        if (result.quoteId) {
+          triggerQuoteWebhook(result.quoteId).catch((err) => {
+            console.error('[API] Email webhook failed:', err)
+            // Non-fatal: quote was saved successfully even if email fails
+          })
+        }
+        
         return {
           success: true,
           quoteId: result.quoteId,

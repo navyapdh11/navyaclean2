@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Shield, Clock, Leaf, DollarSign, CheckCircle } from 'lucide-react'
 import { SERVICES_LIST } from '../lib/constants'
+import { AU_STATES } from '../lib/services-au'
 
 export default function ServicesPage() {
   return (
@@ -38,7 +39,11 @@ export default function ServicesPage() {
               transition={{ delay: i * 0.1 }}
             >
               <div className="text-5xl mb-4" aria-hidden="true">{service.icon}</div>
-              <h3 className="text-xl font-bold mb-2" style={{ color: service.color }}>{service.name}</h3>
+              <h3 className="text-xl font-bold mb-2" style={{ color: service.color }}>
+                <Link to={`/service/${service.id}/NSW`} className="hover:text-neon-blue transition-colors">
+                  {service.name}
+                </Link>
+              </h3>
               <p className="text-white/60 text-sm mb-4">{service.desc}</p>
               <ul className="space-y-2 text-sm text-white/70">
                 <li className="flex items-center gap-2">
@@ -54,6 +59,24 @@ export default function ServicesPage() {
                   Satisfaction guaranteed
                 </li>
               </ul>
+              {/* State Links */}
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <p className="text-xs text-white/50 mb-2">Available in:</p>
+                <div className="flex flex-wrap gap-1">
+                  {AU_STATES.slice(0, 4).map((state) => (
+                    <Link
+                      key={state}
+                      to={`/service/${service.id}/${state}`}
+                      className="px-2 py-1 text-xs glass-input hover:text-neon-blue transition-colors rounded"
+                    >
+                      {state}
+                    </Link>
+                  ))}
+                  {AU_STATES.length > 4 && (
+                    <span className="px-2 py-1 text-xs text-white/40">+{AU_STATES.length - 4} more</span>
+                  )}
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>

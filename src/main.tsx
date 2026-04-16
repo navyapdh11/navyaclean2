@@ -4,6 +4,20 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import AppRouter from './AppRouter'
 import './index.css'
 
+// Register Service Worker for PWA support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .then((registration) => {
+        console.log('[PWA] Service Worker registered:', registration.scope)
+      })
+      .catch((error) => {
+        console.error('[PWA] Service Worker registration failed:', error)
+      })
+  })
+}
+
 // Lazy-load 3D scene only if user has no prefers-reduced-motion
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 

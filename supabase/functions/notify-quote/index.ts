@@ -1,16 +1,28 @@
 // Supabase Edge Function: notify-quote
-// Deploys via: supabase functions deploy notify-quote
-// Triggers on: INSERT into quotes table (via Database Webhook)
-//
-// Sends confirmation email to customer using Resend API.
-// Setup: Set RESEND_API_KEY secret in Supabase project settings.
+// Sends email notifications via Resend API when a new quote is created
+// Triggered by webhook on INSERT into quotes table
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.38.0'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM_EMAIL = 'SparkleClean Pro <quotes@sparkleclean.pro>'
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+const BUSINESS = {
+  name: 'SparkleClean Pro',
+  email: 'contact@sparkleclean.pro',
+  phone: '+61 2 9000 0000',
+  address: '123 Clean Street, Sydney NSW 2000',
+  abn: '12 345 678 901',
+  website: 'https://sparkleclean.pro',
+}
 
 interface QuotePayload {
+  type: 'INSERT'
+  table: string
   record: {
     id: string
     customer_id: string
@@ -30,157 +42,273 @@ interface QuotePayload {
     valid_until: string
     created_at: string
   }
-  customer: {
-    full_name: string
-    email: string
-    phone: string
+}
+
+// Email template for quote confirmation
+function generateQuoteEmail(
+  customerName: string,
+  customerEmail: string,
+  quote: QuotePayload['record']
+): { subject: string; html: string; text: string } {
+  const total = (quote.total_cents / 100).toFixed(2)
+  const gst = (quote.gst_cents / 100).toFixed(2)
+  const subtotal = (quote.subtotal_cents / 100).toFixed(2)
+  const validUntil = new Date(quote.valid_until).toLocaleDateString('en-AU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+
+  const servicesList = quote.selected_services
+    .map((s) => `<li>${s.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</li>`)
+    .join('')
+
+  const frequencyDiscount = getFrequencyDiscount(quote.frequency)
+
+  return {
+    subject: `Your SparkleClean Pro Quote — $${total} AUD`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your SparkleClean Pro Quote</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+    <!-- Header -->
+    <tr>
+      <td style="background: linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 28px;">✨ SparkleClean Pro</h1>
+        <p style="color: #ffffff; margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">Premium Cleaning Services — Sydney, Australia</p>
+      </td>
+    </tr>
+
+    <!-- Greeting -->
+    <tr>
+      <td style="padding: 40px 30px 20px 30px;">
+        <h2 style="color: #1a1a1a; margin: 0 0 12px 0; font-size: 24px;">Hi ${customerName},</h2>
+        <p style="color: #666666; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+          Thank you for choosing SparkleClean Pro! Your personalized cleaning quote is ready.
+        </p>
+      </td>
+    </tr>
+
+    <!-- Quote Summary -->
+    <tr>
+      <td style="padding: 0 30px 30px 30px;">
+        <div style="background-color: #f8f9fa; border-radius: 12px; padding: 24px; border: 2px solid #00f0ff33;">
+          <h3 style="color: #1a1a1a; margin: 0 0 16px 0; font-size: 18px;">📋 Quote Summary</h3>
+          
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px;">
+            <tr>
+              <td style="color: #666666; padding: 8px 0;">Property Type</td>
+              <td style="color: #1a1a1a; font-weight: 600; text-align: right; padding: 8px 0;">${quote.property_type}</td>
+            </tr>
+            <tr>
+              <td style="color: #666666; padding: 8px 0; border-top: 1px solid #e5e5e5;">Area</td>
+              <td style="color: #1a1a1a; text-align: right; padding: 8px 0; border-top: 1px solid #e5e5e5;">${quote.area_sqm} m²</td>
+            </tr>
+            <tr>
+              <td style="color: #666666; padding: 8px 0; border-top: 1px solid #e5e5e5;">Bedrooms / Bathrooms</td>
+              <td style="color: #1a1a1a; text-align: right; padding: 8px 0; border-top: 1px solid #e5e5e5;">${quote.bedrooms} bed / ${quote.bathrooms} bath</td>
+            </tr>
+            <tr>
+              <td style="color: #666666; padding: 8px 0; border-top: 1px solid #e5e5e5;">Frequency</td>
+              <td style="color: #1a1a1a; text-align: right; padding: 8px 0; border-top: 1px solid #e5e5e5;">${quote.frequency} ${frequencyDiscount ? `(${frequencyDiscount} OFF)` : ''}</td>
+            </tr>
+            <tr>
+              <td style="color: #666666; padding: 8px 0; border-top: 1px solid #e5e5e5;">Services</td>
+              <td style="color: #1a1a1a; text-align: right; padding: 8px 0; border-top: 1px solid #e5e5e5;">
+                <ul style="margin: 0; padding: 0; list-style: none;">${servicesList}</ul>
+              </td>
+            </tr>
+            ${quote.pets ? `<tr><td style="color: #666666; padding: 8px 0; border-top: 1px solid #e5e5e5;">Pet-Friendly Products</td><td style="color: #1a1a1a; text-align: right; padding: 8px 0; border-top: 1px solid #e5e5e5;">🐾 Yes</td></tr>` : ''}
+            ${quote.eco_friendly ? `<tr><td style="color: #666666; padding: 8px 0; border-top: 1px solid #e5e5e5;">Eco-Friendly Cleaning</td><td style="color: #1a1a1a; text-align: right; padding: 8px 0; border-top: 1px solid #e5e5e5;">🌿 Yes</td></tr>` : ''}
+            ${quote.urgent ? `<tr><td style="color: #666666; padding: 8px 0; border-top: 1px solid #e5e5e5;">Urgent Service</td><td style="color: #1a1a1a; text-align: right; padding: 8px 0; border-top: 1px solid #e5e5e5;">⚡ Yes</td></tr>` : ''}
+          </table>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Pricing -->
+    <tr>
+      <td style="padding: 0 30px 30px 30px;">
+        <div style="background: linear-gradient(135deg, #00f0ff11 0%, #8b5cf611 100%); border-radius: 12px; padding: 24px; border: 1px solid #00f0ff44;">
+          <h3 style="color: #1a1a1a; margin: 0 0 16px 0; font-size: 18px;">💰 Pricing</h3>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px;">
+            <tr>
+              <td style="color: #666666; padding: 6px 0;">Subtotal</td>
+              <td style="color: #1a1a1a; text-align: right; padding: 6px 0;">$${subtotal} AUD</td>
+            </tr>
+            <tr>
+              <td style="color: #666666; padding: 6px 0; border-top: 1px solid #e5e5e5;">GST (10%)</td>
+              <td style="color: #666666; text-align: right; padding: 6px 0; border-top: 1px solid #e5e5e5;">$${gst} AUD</td>
+            </tr>
+            <tr>
+              <td style="color: #1a1a1a; font-weight: 700; font-size: 18px; padding: 12px 0 0 0; border-top: 2px solid #00f0ff;">Total (incl. GST)</td>
+              <td style="color: #00f0ff; font-weight: 700; font-size: 24px; text-align: right; padding: 12px 0 0 0; border-top: 2px solid #00f0ff;">$${total} AUD</td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+
+    <!-- CTA Button -->
+    <tr>
+      <td style="padding: 0 30px 30px 30px; text-align: center;">
+        <a href="${BUSINESS.website}/booking/${quote.id}" 
+           style="display: inline-block; background: linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
+          Book Your Clean Now →
+        </a>
+        <p style="color: #999999; font-size: 12px; margin: 16px 0 0 0;">
+          Quote valid until ${validUntil}
+        </p>
+      </td>
+    </tr>
+
+    <!-- Guarantees -->
+    <tr>
+      <td style="padding: 0 30px 30px 30px;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+          <div style="text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 8px;">🛡️</div>
+            <p style="color: #666666; font-size: 12px; margin: 0;">$20M Insured</p>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 8px;">✅</div>
+            <p style="color: #666666; font-size: 12px; margin: 0;">Satisfaction Guarantee</p>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 8px;">🌿</div>
+            <p style="color: #666666; font-size: 12px; margin: 0;">Eco-Friendly Products</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="background-color: #1a1a1a; padding: 30px; text-align: center;">
+        <p style="color: #ffffff; font-size: 14px; margin: 0 0 8px 0; font-weight: 600;">${BUSINESS.name}</p>
+        <p style="color: #999999; font-size: 12px; margin: 0 0 4px 0;">ABN: ${BUSINESS.abn}</p>
+        <p style="color: #999999; font-size: 12px; margin: 0 0 4px 0;">${BUSINESS.address}</p>
+        <p style="color: #999999; font-size: 12px; margin: 0 0 4px 0;">📞 ${BUSINESS.phone} | ✉️ ${BUSINESS.email}</p>
+        <p style="color: #666666; font-size: 11px; margin: 16px 0 0 0;">
+          This quote is valid for 7 days from issue. All prices include 10% GST.
+          Terms and conditions apply.
+        </p>
+        <p style="color: #666666; font-size: 11px; margin: 8px 0 0 0;">
+          <a href="${BUSINESS.website}/privacy" style="color: #999999; text-decoration: none;">Privacy Policy</a> | 
+          <a href="${BUSINESS.website}/terms" style="color: #999999; text-decoration: none;">Terms of Service</a> | 
+          <a href="${BUSINESS.website}/cancellation" style="color: #999999; text-decoration: none;">Cancellation Policy</a>
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`,
+    text: `
+SparkleClean Pro — Your Quote is Ready
+=====================================
+
+Hi ${customerName},
+
+Thank you for choosing SparkleClean Pro! Your personalized cleaning quote is ready.
+
+QUOTE SUMMARY
+-------------
+Property Type: ${quote.property_type}
+Area: ${quote.area_sqm} m²
+Bedrooms: ${quote.bedrooms}
+Bathrooms: ${quote.bathrooms}
+Frequency: ${quote.frequency} ${frequencyDiscount ? `(${frequencyDiscount} OFF)` : ''}
+Services: ${quote.selected_services.join(', ')}
+${quote.pets ? 'Pet-Friendly Products: Yes' : ''}
+${quote.eco_friendly ? 'Eco-Friendly Cleaning: Yes' : ''}
+${quote.urgent ? 'Urgent Service: Yes' : ''}
+
+PRICING
+-------
+Subtotal: $${subtotal} AUD
+GST (10%): $${gst} AUD
+Total (incl. GST): $${total} AUD
+
+Quote valid until: ${validUntil}
+
+Book your clean now: ${BUSINESS.website}/booking/${quote.id}
+
+---
+${BUSINESS.name}
+ABN: ${BUSINESS.abn}
+${BUSINESS.address}
+📞 ${BUSINESS.phone} | ✉️ ${BUSINESS.email}
+
+This quote is valid for 7 days from issue. All prices include 10% GST.
+Terms and conditions apply.
+
+Privacy Policy: ${BUSINESS.website}/privacy
+Terms of Service: ${BUSINESS.website}/terms
+`,
   }
 }
 
-serve(async (req) => {
-  // Only accept POST requests
-  if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 })
+function getFrequencyDiscount(frequency: string): string {
+  const discounts: Record<string, string> = {
+    'weekly': '15%',
+    'fortnightly': '10%',
+    'monthly': '5%',
   }
+  return discounts[frequency] || ''
+}
 
-  // Parse payload
-  let payload: QuotePayload
+// Main handler
+serve(async (req: Request) => {
   try {
-    payload = await req.json()
-  } catch {
-    return new Response('Invalid JSON payload', { status: 400 })
-  }
+    // Verify request method
+    if (req.method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        status: 405,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
-  const { record, customer } = payload
+    // Check for Resend API key
+    if (!RESEND_API_KEY) {
+      console.error('[notify-quote] RESEND_API_KEY not configured')
+      return new Response(
+        JSON.stringify({ error: 'Email service not configured' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
 
-  if (!customer?.email) {
-    return new Response('Customer email required', { status: 400 })
-  }
+    // Parse webhook payload
+    const payload: QuotePayload = await req.json()
+    const quote = payload.record
 
-  if (!RESEND_API_KEY) {
-    console.error('RESEND_API_KEY not configured')
-    return new Response('Email service not configured', { status: 500 })
-  }
+    console.log(`[notify-quote] Processing quote: ${quote.id} for customer: ${quote.customer_id}`)
 
-  // Format currency for display
-  const totalDollars = (record.total_cents / 100).toFixed(2)
-  const gstDollars = (record.gst_cents / 100).toFixed(2)
-  const subtotalDollars = (record.subtotal_cents / 100).toFixed(2)
+    // Fetch customer details
+    const { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('full_name, email, phone')
+      .eq('id', quote.customer_id)
+      .single()
 
-  // Service names for display
-  const serviceNames = record.selected_services
-    .map((s: string) => s.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()))
-    .join(', ')
+    if (customerError || !customer) {
+      console.error(`[notify-quote] Customer lookup failed: ${customerError?.message}`)
+      return new Response(
+        JSON.stringify({ error: 'Customer not found' }),
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
 
-  // Build HTML email body
-  const htmlBody = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Your SparkleClean Pro Quote</title>
-    </head>
-    <body style="margin:0;padding:0;background-color:#0a0e17;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0e17;padding:40px 20px;">
-        <tr>
-          <td align="center">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;overflow:hidden;">
-              <!-- Header -->
-              <tr>
-                <td style="background:linear-gradient(135deg,#00d4e6,#8b5cf6);padding:32px;text-align:center;">
-                  <h1 style="margin:0;color:#ffffff;font-size:28px;">✨ Your SparkleClean Quote</h1>
-                  <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:16px;">Thank you, ${customer.full_name}!</p>
-                </td>
-              </tr>
+    // Generate email content
+    const { subject, html, text } = generateQuoteEmail(customer.full_name, customer.email, quote)
 
-              <!-- Quote Total -->
-              <tr>
-                <td style="padding:32px;text-align:center;">
-                  <div style="font-size:48px;font-weight:900;background:linear-gradient(135deg,#00d4e6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
-                    $${totalDollars}
-                  </div>
-                  <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:8px 0 0;">Total (GST inclusive)</p>
-                </td>
-              </tr>
-
-              <!-- Details -->
-              <tr>
-                <td style="padding:0 32px 32px;">
-                  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:rgba(255,255,255,0.03);border-radius:12px;padding:20px;">
-                    <tr>
-                      <td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">Services:</td>
-                      <td style="color:#ffffff;font-size:14px;text-align:right;font-weight:600;">${serviceNames}</td>
-                    </tr>
-                    <tr>
-                      <td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">Property:</td>
-                      <td style="color:#ffffff;font-size:14px;text-align:right;">${record.property_type} · ${record.bedrooms} bed · ${record.bathrooms} bath</td>
-                    </tr>
-                    <tr>
-                      <td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">Area:</td>
-                      <td style="color:#ffffff;font-size:14px;text-align:right;">${record.area_sqm} m²</td>
-                    </tr>
-                    <tr>
-                      <td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">Frequency:</td>
-                      <td style="color:#ffffff;font-size:14px;text-align:right;text-transform:capitalize;">${record.frequency.replace('-', ' ')}</td>
-                    </tr>
-                    ${record.eco_friendly ? '<tr><td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">Eco-Friendly:</td><td style="color:#00cc7d;font-size:14px;text-align:right;">✅ Yes (+15%)</td></tr>' : ''}
-                    ${record.pets ? '<tr><td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">Pet Friendly:</td><td style="color:#ffffff;font-size:14px;text-align:right;">✅ Yes (+$35)</td></tr>' : ''}
-                    ${record.urgent ? '<tr><td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">Urgent Service:</td><td style="color:#e6d400;font-size:14px;text-align:right;">⚡ Yes (x1.5)</td></tr>' : ''}
-                    <tr>
-                      <td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.1);">Subtotal:</td>
-                      <td style="color:#ffffff;font-size:14px;text-align:right;border-top:1px solid rgba(255,255,255,0.1);">$${subtotalDollars}</td>
-                    </tr>
-                    <tr>
-                      <td style="color:rgba(255,255,255,0.6);font-size:14px;padding:8px 0;">GST (10%):</td>
-                      <td style="color:#ffffff;font-size:14px;text-align:right;">$${gstDollars}</td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-
-              <!-- CTA -->
-              <tr>
-                <td style="padding:0 32px 32px;text-align:center;">
-                  <a href="https://sparkleclean.pro/booking/${record.id}"
-                     style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#00d4e6,#8b5cf6);color:#ffffff;text-decoration:none;border-radius:12px;font-weight:600;font-size:16px;">
-                    Book This Clean →
-                  </a>
-                </td>
-              </tr>
-
-              <!-- Validity -->
-              <tr>
-                <td style="padding:0 32px 32px;text-align:center;">
-                  <p style="color:rgba(255,255,255,0.4);font-size:12px;margin:0;">
-                    Quote valid until ${new Date(record.valid_until).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    · Quote ID: ${record.id.slice(0, 8)}
-                  </p>
-                </td>
-              </tr>
-
-              <!-- Footer -->
-              <tr>
-                <td style="background-color:rgba(0,0,0,0.3);padding:24px 32px;text-align:center;">
-                  <p style="color:rgba(255,255,255,0.5);font-size:12px;margin:0 0 8px;">
-                    SparkleClean Pro · 123 Clean Street, Sydney NSW 2000
-                  </p>
-                  <p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0;">
-                    This email was sent because you requested a cleaning quote.
-                    If this wasn't you, please ignore this email.
-                  </p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </body>
-    </html>
-  `
-
-  // Send via Resend
-  try {
+    // Send email via Resend API
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -188,27 +316,56 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: FROM_EMAIL,
+        from: 'SparkleClean Pro <noreply@sparkleclean.pro>',
         to: [customer.email],
-        subject: `✨ Your SparkleClean Quote — $${totalDollars}`,
-        html: htmlBody,
-        text: `Hi ${customer.full_name},\n\nYour SparkleClean Pro quote is ready!\n\nTotal: $${totalDollars} (GST inclusive)\nServices: ${serviceNames}\nProperty: ${record.property_type}, ${record.bedrooms} bed, ${record.bathrooms} bath\nArea: ${record.area_sqm} m²\nFrequency: ${record.frequency}\n\nBook now: https://sparkleclean.pro/booking/${record.id}\n\nQuote valid until ${new Date(record.valid_until).toLocaleDateString('en-AU')}.\n\nThanks,\nSparkleClean Pro Team`,
+        subject,
+        html,
+        text,
+        reply_to: BUSINESS.email,
+        tags: [
+          { name: 'type', value: 'quote' },
+          { name: 'quote_id', value: quote.id },
+          { name: 'customer_id', value: quote.customer_id },
+        ],
       }),
     })
 
     if (!resendResponse.ok) {
       const errorData = await resendResponse.json()
-      console.error('Resend API error:', errorData)
-      return new Response(`Email send failed: ${resendResponse.status}`, { status: 502 })
+      console.error(`[notify-quote] Resend API error: ${JSON.stringify(errorData)}`)
+      return new Response(
+        JSON.stringify({ error: 'Failed to send email', details: errorData }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } }
+      )
     }
 
-    console.log(`✅ Email sent to ${customer.email} for quote ${record.id}`)
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
+    const resendResult = await resendResponse.json()
+    console.log(`[notify-quote] Email sent successfully: ${resendResult.id}`)
+
+    // Log the email in audit_log
+    await supabase.from('audit_log').insert({
+      actor_type: 'system',
+      actor_id: 'notify-quote-function',
+      action: 'QUOTE_EMAIL_SENT',
+      resource_type: 'quote',
+      resource_id: quote.id,
+      details: {
+        customer_id: quote.customer_id,
+        email: customer.email,
+        resend_id: resendResult.id,
+        total_cents: quote.total_cents,
+      },
     })
+
+    return new Response(
+      JSON.stringify({ success: true, email_id: resendResult.id }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    )
   } catch (error) {
-    console.error('Email send error:', error)
-    return new Response(`Failed to send email: ${error.message}`, { status: 500 })
+    console.error('[notify-quote] Unexpected error:', error)
+    return new Response(
+      JSON.stringify({ error: 'Internal server error', message: (error as Error).message }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
   }
 })

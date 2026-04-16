@@ -1,4 +1,5 @@
 import type { QuoteForm } from './schema'
+import type { ServiceDefinition, AustralianState } from './services-au'
 
 // ─── Pricing Constants ─────────────────────────────────────────
 export const SERVICE_BASE_COSTS: Record<string, number> = {
@@ -7,6 +8,24 @@ export const SERVICE_BASE_COSTS: Record<string, number> = {
   carpet: 60,
   windows: 45,
   oven: 35,
+  // AU services expansion
+  domestic: 55,
+  endOfLease: 500,
+  moveInOut: 450,
+  laundry: 35,
+  commercial: 60,
+  office: 70,
+  industrial: 80,
+  builders: 70,
+  retail: 60,
+  strata: 75,
+  school: 70,
+  medical: 90,
+  window: 60,
+  upholstery: 120,
+  tile: 70,
+  pressure: 200,
+  disinfection: 150,
 }
 
 export const AREA_RATES: Record<string, number> = {
@@ -81,4 +100,125 @@ export function formatPrice(total: number): { total: string; gst: string; subtot
     gst: `$${gst.toLocaleString('en-AU')}`,
     subtotal: `$${subtotal.toLocaleString('en-AU')}`,
   }
+}
+
+// ─── AU Services Advanced Pricing ───────────────────────────────
+
+export interface AUQuoteParams {
+  serviceId: string
+  state: AustralianState
+  bedrooms?: number
+  bathrooms?: number
+  sqm?: number
+  condition?: 'basic' | 'standard' | 'deep'
+  addons?: string[]
+  frequency?: 'once' | 'weekly' | 'fortnightly' | 'monthly'
+}
+
+export interface PriceRange {
+  min: number
+  max: number
+  avg: number
+  gstIncluded: number
+  subtotal: number
+}
+
+/**
+ * Calculate AU service price with state multiplier
+ */
+export function calculateAUPrice(
+  service: ServiceDefinition,
+  state: AustralianState,
+  params: {
+    bedrooms?: number
+    bathrooms?: number
+    sqm?: number
+    condition?: 'basic' | 'standard' | 'deep'
+    addons?: string[]
+    frequency?: 'once' | 'weekly' | 'fortnightly' | 'monthly'
+  } = {}
+): number {
+  const stateMultiplier = service.states[state]?.multiplier ?? 1.0
+  const conditionMultiplier = params.condition === 'deep' ? 1.5 : params.condition === 'basic' ? 0.9 : 1.0
+
+  // Base price
+  const basePrice = service.basePrice.min
+
+  // Area and room factors
+  const areaFactor = params.sqm ? (params.sqm / 100) * 0.3 : 0
+  const roomFactor = (params.bedrooms ?? 0) * 0.1 + (params.bathrooms ?? 0) * 0.15
+
+  // Addons
+  const addonPrices: Record<string, number> = {
+    oven_cleaning: 80,
+    fridge_cleaning: 50,
+    window_interior: 60,
+    laundry: 40,
+    stain_treatment: 35,
+    deodorizing: 25,
+    pet_hair_removal: 30,
+    fly_screen_cleaning: 20,
+    track_cleaning: 25,
+    high_reach: 50,
+    fabric_protection: 45,
+    gutter_cleaning: 80,
+    roof_washing: 100,
+    deck_restoration: 120,
+  }
+  const addonsTotal = (params.addons ?? []).reduce(
+    (sum, addon) => sum + (addonPrices[addon] ?? 0),
+    0
+  )
+
+  // Frequency discount
+  const frequencyDiscount = service.frequencyDiscounts?.[params.frequency ?? 'once'] ?? 0
+
+  // Calculate
+  let price =
+    basePrice *
+    stateMultiplier *
+    (1 + areaFactor + roomFactor) *
+    conditionMultiplier +
+    addonsTotal
+
+  price *= 1 - frequencyDiscount
+
+  return Math.round(price)
+}
+
+/**
+ * Monte Carlo Simulation for price range estimation
+ * Runs 100 simulations with variance to provide realistic price ranges
+ */
+export function runMonteCarloSimulation(
+  service: ServiceDefinition,
+  state: AustralianState,
+  params: AUQuoteParams
+): PriceRange {
+  const simulations = 100
+  const results: number[] = []
+
+  for (let i = 0; i < simulations; i++) {
+    // Random variance ±15% to simulate real-world complexity
+    const complexityVariance = (Math.random() - 0.5) * 0.3 // -15% to +15%
+
+    const price = calculateAUPrice(service, state, {
+      bedrooms: params.bedrooms,
+      bathrooms: params.bathrooms,
+      sqm: params.sqm,
+      condition: params.condition,
+      addons: params.addons,
+      frequency: params.frequency,
+    })
+
+    results.push(Math.round(price * (1 + complexityVariance)))
+  }
+
+  const min = Math.min(...results)
+  const max = Math.max(...results)
+  const avg = Math.round(results.reduce((a, b) => a + b, 0) / simulations)
+  const gstIncluded = Math.round(avg / 11)
+  const subtotal = avg - gstIncluded
+
+  return { min, max, avg, gstIncluded, subtotal }
 }
