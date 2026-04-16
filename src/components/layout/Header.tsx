@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { label: 'Services', href: '/services' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Admin', href: '/admin' },
 ] as const
 
 const Header = memo(function Header() {
@@ -30,10 +31,16 @@ const Header = memo(function Header() {
               key={link.href}
               to={link.href}
               className={`text-sm font-medium transition-colors hover:text-neon-blue ${
-                location.pathname === link.href ? 'text-neon-blue' : 'text-white/70'
+                link.href === '/admin'
+                  ? location.pathname.startsWith('/admin')
+                    ? 'text-neon-purple font-bold'
+                    : 'text-neon-purple/70 hover:text-neon-purple'
+                  : location.pathname === link.href
+                  ? 'text-neon-blue'
+                  : 'text-white/70'
               }`}
             >
-              {link.label}
+              {link.href === '/admin' ? `🛡️ ${link.label}` : link.label}
             </Link>
           ))}
           <Link to="/booking" className="glass-button-neon px-5 py-2 text-sm font-semibold">

@@ -14,6 +14,16 @@ import ContactPage from './pages/ContactPage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import CancellationPage from './pages/CancellationPage'
+import AdminLayout from './components/admin/AdminLayout'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminPricing from './pages/admin/AdminPricing'
+import AdminPhotos from './pages/admin/AdminPhotos'
+import AdminAds from './pages/admin/AdminAds'
+import AdminDiscounts from './pages/admin/AdminDiscounts'
+import AdminStaff from './pages/admin/AdminStaff'
+import AdminWebcam from './pages/admin/AdminWebcam'
+import AdminAudit from './pages/admin/AdminAudit'
+import AdminSettings from './pages/admin/AdminSettings'
 import InstallPrompt from './components/pwa/InstallPrompt'
 import { usePWA } from './hooks/usePWA'
 
@@ -40,6 +50,20 @@ function AppContent() {
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/cancellation" element={<CancellationPage />} />
               <Route path="/booking" element={<QuoteBuilderApp />} />
+
+              {/* Admin Dashboard */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="pricing" element={<AdminPricing />} />
+                <Route path="photos" element={<AdminPhotos />} />
+                <Route path="ads" element={<AdminAds />} />
+                <Route path="discounts" element={<AdminDiscounts />} />
+                <Route path="staff" element={<AdminStaff />} />
+                <Route path="webcam" element={<AdminWebcam />} />
+                <Route path="audit" element={<AdminAudit />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+
               {/* 404 */}
               <Route path="*" element={
                 <div className="min-h-[60vh] flex items-center justify-center text-center px-4">
