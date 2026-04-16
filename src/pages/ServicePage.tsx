@@ -19,17 +19,28 @@ import FAQSection from '../components/content/FAQSection'
 import ComplianceFooter from '../components/compliance/ComplianceFooter'
 import SEO from '../components/SEO'
 
-// Service slug aliases
+// Service slug aliases — redirect common misspellings/alternate names to actual slugs
 const SERVICE_ALIASES: Record<string, string> = {
-  'standard': 'domestic', 'regular': 'domestic', 'house': 'domestic', 'home': 'domestic', 'residential': 'domestic',
-  'bond': 'end-of-lease', 'bond-clean': 'end-of-lease', 'bondclean': 'end-of-lease', 'endoflease': 'end-of-lease', 'end-of-lease-clean': 'end-of-lease',
-  'deep': 'deep-clean', 'deepclean': 'deep-clean', 'deep-cleaning': 'deep-clean',
-  'move': 'move-in-out', 'movein': 'move-in-out', 'move-out': 'move-in-out', 'move-in': 'move-in-out',
-  'office-clean': 'office', 'office-cleaning': 'office',
-  'retail-clean': 'retail', 'retail-cleaning': 'retail',
-  'carpet-clean': 'carpet', 'carpet-cleaning': 'carpet',
-  'window-clean': 'window', 'window-cleaning': 'window',
-  'pressure-wash': 'pressure', 'pressure-washing': 'pressure', 'pressure-clean': 'pressure',
+  'standard': 'domestic-cleaning', 'regular': 'domestic-cleaning', 'house': 'domestic-cleaning', 'home': 'domestic-cleaning', 'residential': 'domestic-cleaning', 'domestic': 'domestic-cleaning',
+  'bond': 'end-of-lease-cleaning', 'bond-clean': 'end-of-lease-cleaning', 'bondclean': 'end-of-lease-cleaning', 'endoflease': 'end-of-lease-cleaning', 'end-of-lease': 'end-of-lease-cleaning', 'end-of-lease-clean': 'end-of-lease-cleaning', 'lease': 'end-of-lease-cleaning',
+  'deep': 'deep-cleaning', 'deepclean': 'deep-cleaning', 'deep-cleaning': 'deep-cleaning', 'deep-clean': 'deep-cleaning',
+  'move': 'move-in-out-cleaning', 'movein': 'move-in-out-cleaning', 'move-out': 'move-in-out-cleaning', 'move-in': 'move-in-out-cleaning', 'move-in-out': 'move-in-out-cleaning', 'moving': 'move-in-out-cleaning',
+  'laundry': 'laundry-services',
+  'commercial': 'commercial-cleaning',
+  'office': 'office-cleaning', 'office-clean': 'office-cleaning', 'office-cleaning': 'office-cleaning',
+  'industrial': 'industrial-cleaning',
+  'builders': 'builders-cleaning',
+  'retail': 'retail-cleaning', 'retail-clean': 'retail-cleaning', 'retail-cleaning': 'retail-cleaning',
+  'strata': 'strata-cleaning',
+  'school': 'school-educational-cleaning',
+  'medical': 'medical-healthcare-cleaning',
+  'carpet': 'carpet-cleaning', 'carpet-clean': 'carpet-cleaning', 'carpet-cleaning': 'carpet-cleaning',
+  'window': 'window-cleaning', 'window-clean': 'window-cleaning', 'window-cleaning': 'window-cleaning', 'windows': 'window-cleaning',
+  'oven': 'oven-cleaning',
+  'upholstery': 'upholstery-cleaning',
+  'tile': 'tile-grout-cleaning', 'grout': 'tile-grout-cleaning',
+  'pressure': 'pressure-washing', 'pressure-wash': 'pressure-washing', 'pressure-washing': 'pressure-washing', 'pressure-clean': 'pressure-washing',
+  'disinfection': 'disinfection-sanitization',
 }
 
 // ──────────────────────────────────────────────────────────────
