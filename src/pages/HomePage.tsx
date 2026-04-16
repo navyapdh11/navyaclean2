@@ -33,13 +33,13 @@ export default function HomePage() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          ✨ SparkleClean Pro
+          SparkleClean Pro
         </motion.h1>
         <motion.p
           className="relative text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-8"
           {...fadeInUp}
         >
-          Premium 3D Quote Builder — Transparent Pricing, Instant Results
+          See your cleaning price before you book. No hidden fees.
         </motion.p>
         <motion.div
           className="relative flex flex-wrap justify-center gap-4 text-sm"
@@ -79,7 +79,7 @@ export default function HomePage() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          🧼 Our Services
+          Our Cleaning Services
         </motion.h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4" role="list">
           {SERVICES_LIST.map((service, i) => (
@@ -109,13 +109,14 @@ export default function HomePage() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          💎 Why Choose SparkleClean Pro?
+          Why Choose SparkleClean Pro
         </motion.h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { icon: <Zap className="w-6 h-6" />, title: 'Instant Quotes', desc: 'Get transparent, GST-inclusive pricing in seconds with our 3D quote builder.' },
-            { icon: <Leaf className="w-6 h-6" />, title: 'Eco-Friendly', desc: 'Certified sustainable products, safe for families, children, and pets.' },
-            { icon: <Shield className="w-6 h-6" />, title: 'Fully Insured', desc: '$20M public liability insurance, police-checked cleaners, satisfaction guaranteed.' },
+            { icon: <Zap className="w-6 h-6" />, title: 'Instant Quotes', desc: 'See your price in seconds. No phone calls, no waiting.' },
+            { icon: <Leaf className="w-6 h-6" />, title: 'Eco-Friendly', desc: 'Environmental Choice Australia certified products. Safe for kids and pets.' },
+            { icon: <Shield className="w-6 h-6" />, title: 'Fully Insured', desc: '$20M public liability. Police-checked cleaners. Free re-clean if you\'re not happy.' },
+            { icon: <Clock className="w-6 h-6" />, title: 'Same-Day Booking', desc: 'Book by 9am, cleaned by afternoon. Subject to availability.' },
           ].map((item, i) => (
             <motion.div
               key={item.title}
@@ -150,7 +151,7 @@ export default function HomePage() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          ❓ Frequently Asked Questions
+          Frequently Asked Questions
         </motion.h2>
         <div className="space-y-3">
           {FAQS.map((faq, i) => (
@@ -175,10 +176,10 @@ export default function HomePage() {
           className="glass-panel p-8 max-w-2xl mx-auto glow-border"
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-gradient mb-4">
-            Ready for a Spotless Space?
+            Book Your Next Clean
           </h2>
           <p className="text-white/70 mb-6">
-            Join hundreds of happy Sydney customers. Your first clean is just a click away.
+            Over 300 Sydney homes and businesses rated us 4.9 stars. Get a quote in 60 seconds.
           </p>
           <Link to="/booking" className="glass-button-neon px-8 py-4 text-lg font-bold">
             Get Your Free Quote →

@@ -36,12 +36,12 @@ export const SERVICES_LIST: ServiceEntry[] = [
 ]
 
 export const FAQS = [
-  { q: 'How do you calculate cleaning quotes?', a: 'Our quote builder calculates prices based on selected services, property area, number of rooms, and booking frequency. Each service has a base cost, with area and room surcharges added. Weekly bookings receive 25% discount. All prices include GST.' },
-  { q: 'What areas do you cover in Sydney?', a: 'We cover all of Greater Sydney Metropolitan area including CBD, Eastern Suburbs, Inner West, North Shore, Western Sydney, Sutherland Shire, and Northern Beaches. Travel within 50km is included at no extra charge.' },
-  { q: 'Do you use eco-friendly products?', a: 'Yes! We offer eco-friendly cleaning options using sustainable, non-toxic products certified by Environmental Choice Australia. This option adds 15% to your quote but ensures zero chemical residue — perfect for families with children and pets.' },
-  { q: 'What is your cancellation policy?', a: 'Free cancellation up to 24 hours before scheduled service. Cancellations within 24 hours incur a 50% fee. No-shows are charged the full quoted amount.' },
-  { q: 'Are your cleaners insured and vetted?', a: 'Absolutely. All our cleaners undergo police checks, hold valid working rights, and are covered by our $20M public liability insurance. We also provide a 100% satisfaction guarantee — if you\'re not happy, we\'ll re-clean for free.' },
-  { q: 'How long does a typical clean take?', a: 'Duration depends on property size and service type. A standard 150m² house clean takes 3–4 hours. Deep cleans may take 5–6 hours. We always allocate sufficient time for quality results, never rushing the job.' },
+  { q: 'How do you calculate cleaning quotes?', a: 'Our quote builder uses four factors: the service type, property area, number of rooms, and booking frequency. Each service has a base cost. Weekly bookings get 25% off. All prices include GST.' },
+  { q: 'What areas do you cover in Sydney?', a: 'All of Greater Sydney — CBD, Eastern Suburbs, Inner West, North Shore, Western Sydney, Sutherland Shire, and Northern Beaches. Travel within 50km is included.' },
+  { q: 'Do you use eco-friendly products?', a: 'Yes. We use products certified by Environmental Choice Australia. They\'re non-toxic and safe for children and pets. The eco-friendly option adds about 15% to your quote.' },
+  { q: 'What is your cancellation policy?', a: 'Free cancellation up to 24 hours before your scheduled service. Less than 24 hours incurs a 50% fee. No-shows are charged the full amount.' },
+  { q: 'Are your cleaners insured and vetted?', a: 'All cleaners have police checks, valid working rights, and are covered by our $20M public liability insurance. If you\'re not happy with the clean, we\'ll re-clean for free.' },
+  { q: 'How long does a typical clean take?', a: 'A standard 150m² house takes about 3–4 hours. Deep cleans run longer — closer to 5–6 hours. We don\'t rush.' },
 ]
 
 export type TrustBadgeEntry = {

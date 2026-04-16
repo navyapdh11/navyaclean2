@@ -34,7 +34,7 @@ export const serviceFAQs: FAQDatabase = {
       },
       {
         q: 'Can I get a discount for regular cleaning?',
-        a: 'Absolutely! We offer: Weekly (15% off), Fortnightly (10% off), Monthly (5% off). Regular customers also get priority booking and a dedicated cleaner.',
+        a: 'Yes. Weekly (15% off), Fortnightly (10% off), Monthly (5% off). Regular customers also get priority booking and a dedicated cleaner.',
         category: 'pricing',
       },
       {
@@ -93,7 +93,7 @@ export const serviceFAQs: FAQDatabase = {
       },
       {
         q: 'Are you familiar with NSW REINSW checklist requirements?',
-        a: 'Absolutely. Our cleaners are trained on the latest REINSW (Real Estate Institute of NSW) exit cleaning checklist. We provide a detailed checklist completion report with photos for your records.',
+        a: 'Our cleaners are trained on the latest REINSW (Real Estate Institute of NSW) exit cleaning checklist. We provide a detailed checklist completion report with photos.',
         category: 'compliance',
       },
       {

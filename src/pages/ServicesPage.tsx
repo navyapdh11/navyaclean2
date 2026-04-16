@@ -14,7 +14,7 @@ export default function ServicesPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          🧼 Our Cleaning Services
+          Our Cleaning Services
         </motion.h1>
         <motion.p
           className="text-lg text-white/70 max-w-2xl mx-auto"
@@ -22,7 +22,7 @@ export default function ServicesPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          Professional cleaning solutions for every need — from regular maintenance to intensive deep cleans.
+          From weekly home cleaning to one-off deep cleans after renovations.
         </motion.p>
       </section>
 
@@ -99,23 +99,23 @@ export default function ServicesPage() {
               <h3 className="font-semibold text-white mb-3">How We Calculate</h3>
               <ul className="space-y-3 text-sm text-white/70">
                 <li className="flex gap-2">
-                  <span className="text-neon-blue font-bold">1.</span>
+                  <span className="text-neon-blue">1.</span>
                   Base cost per service (see individual services above)
                 </li>
                 <li className="flex gap-2">
-                  <span className="text-neon-blue font-bold">2.</span>
+                  <span className="text-neon-blue">2.</span>
                   Area-based adjustment (per square metre)
                 </li>
                 <li className="flex gap-2">
-                  <span className="text-neon-blue font-bold">3.</span>
+                  <span className="text-neon-blue">3.</span>
                   Room surcharges (bedrooms + bathrooms)
                 </li>
                 <li className="flex gap-2">
-                  <span className="text-neon-blue font-bold">4.</span>
+                  <span className="text-neon-blue">4.</span>
                   Frequency discounts (up to 25% off for weekly)
                 </li>
                 <li className="flex gap-2">
-                  <span className="text-neon-blue font-bold">5.</span>
+                  <span className="text-neon-blue">5.</span>
                   Add-ons: Eco-friendly, pet-safe, urgent
                 </li>
               </ul>
