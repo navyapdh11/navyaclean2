@@ -25,7 +25,7 @@ const MOCK_PHOTOS: Photo[] = [
 export default function AdminPhotos() {
   const [photos, setPhotos] = useState<Photo[]>(MOCK_PHOTOS)
   const [uploading, setUploading] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [_editingId, setEditingId] = useState<string | null>(null)
   const [filter, setFilter] = useState('all')
   const fileInputRef = useRef<HTMLInputElement>(null)
 

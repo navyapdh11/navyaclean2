@@ -1,7 +1,7 @@
 // Admin Ads & Banners Management
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Plus, Edit2, Trash2, Eye, Pause, Play, BarChart3 } from 'lucide-react'
+
+import { Plus, Edit2, Trash2, Eye, Pause, Play } from 'lucide-react'
 
 interface Ad {
   id: string

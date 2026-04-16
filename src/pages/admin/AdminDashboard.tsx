@@ -1,8 +1,7 @@
 // Admin Dashboard Overview — stats, quick actions, recent activity
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { DollarSign, Users, Percent, Camera, TrendingUp, Activity, Clock, AlertTriangle } from 'lucide-react'
-import { supabase } from '../../lib/supabase-client'
+import { DollarSign, Users, Percent, Camera, Activity, Clock, AlertTriangle } from 'lucide-react'
 
 export default function AdminDashboard() {
   const [stats] = useState({

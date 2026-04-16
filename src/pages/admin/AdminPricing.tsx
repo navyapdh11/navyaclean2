@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Save, RotateCcw, DollarSign, Percent, TrendingUp } from 'lucide-react'
-import { cleaningServices, AU_STATES, STATE_CONFIG, type ServiceId } from '../../lib/services-au'
+import { cleaningServices, AU_STATES, STATE_CONFIG } from '../../lib/services-au'
 
 export default function AdminPricing() {
   const [multipliers, setMultipliers] = useState<Record<string, number>>(
@@ -172,12 +172,12 @@ export default function AdminPricing() {
             </div>
             <div>
               <div className="text-sm text-white/50">NSW Multiplier</div>
-              <div className="text-xl font-bold text-neon-blue">×{multipliers.NSW}</div>
+              <div className="text-xl font-bold text-neon-blue">×{multipliers.NSW || 1}</div>
             </div>
             <div>
               <div className="text-sm text-white/50">Final (incl. GST)</div>
               <div className="text-xl font-bold text-neon-green">
-                ${Math.round((basePrices.domestic || 55) * multipliers.NSW)}
+                ${Math.round((basePrices.domestic || 55) * (multipliers.NSW || 1))}
               </div>
             </div>
           </div>
