@@ -1,17 +1,17 @@
 // Admin Dashboard Overview — stats, quick actions, recent activity
-import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { DollarSign, Users, Percent, Camera, Activity, Clock, AlertTriangle } from 'lucide-react'
 
 export default function AdminDashboard() {
-  const [stats] = useState({
+  const stats = {
     totalQuotes: 487,
     totalBookings: 312,
     activeDiscounts: 3,
     activeStaff: 12,
     camerasOnline: 2,
     revenueThisMonth: 48750,
-  })
+  }
 
   return (
     <div className="space-y-6">
@@ -21,7 +21,7 @@ export default function AdminDashboard() {
           { label: 'Revenue (Month)', value: `$${stats.revenueThisMonth.toLocaleString()}`, icon: DollarSign, color: 'text-neon-green' },
           { label: 'Total Bookings', value: stats.totalBookings, icon: Activity, color: 'text-neon-blue' },
           { label: 'Active Discounts', value: stats.activeDiscounts, icon: Percent, color: 'text-neon-purple' },
-          { label: 'Staff Online', value: `${stats.activeStaff} / ${stats.activeStaff}`, icon: Users, color: 'text-neon-green' },
+          { label: 'Staff Online', value: `${stats.activeStaff}`, icon: Users, color: 'text-neon-green' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -50,14 +50,14 @@ export default function AdminDashboard() {
             { label: 'Create Discount', to: '/admin/discounts', icon: Percent },
             { label: 'View Webcam', to: '/admin/webcam', icon: Camera },
           ].map((action) => (
-            <a
+            <Link
               key={action.to}
-              href={action.to}
+              to={action.to}
               className="glass-input p-4 rounded-lg text-center hover:bg-white/10 transition-all block"
             >
               <action.icon className="w-6 h-6 mx-auto mb-2 text-neon-blue" />
               <div className="text-sm font-semibold">{action.label}</div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

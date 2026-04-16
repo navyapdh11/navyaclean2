@@ -1,7 +1,7 @@
 // Admin Webcam — Real-time camera monitoring via WebRTC
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Camera, WifiOff, Maximize2, Settings, RefreshCw } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Camera, WifiOff, Maximize2, Settings, RefreshCw, X, Save } from 'lucide-react'
 
 interface CameraFeed {
   id: string
@@ -20,6 +20,9 @@ const MOCK_CAMERAS: CameraFeed[] = [
 export default function AdminWebcam() {
   const [cameras, setCameras] = useState<CameraFeed[]>(MOCK_CAMERAS)
   const [fullscreen, setFullscreen] = useState<string | null>(null)
+  const [showSettings, setShowSettings] = useState(false)
+  const [settingsCam, setSettingsCam] = useState<CameraFeed | null>(null)
+  const [streamUrl, setStreamUrl] = useState('')
 
   // Simulate connection check
   useEffect(() => {
@@ -35,6 +38,32 @@ export default function AdminWebcam() {
     return () => clearInterval(interval)
   }, [])
 
+  const handleRefresh = () => {
+    setCameras((prev) =>
+      prev.map((c) => ({
+        ...c,
+        status: Math.random() > 0.3 ? 'online' : 'offline' as const,
+      }))
+    )
+  }
+
+  const openSettings = (camera: CameraFeed) => {
+    setSettingsCam(camera)
+    setStreamUrl(camera.streamUrl || '')
+    setShowSettings(true)
+  }
+
+  const saveSettings = () => {
+    if (settingsCam) {
+      setCameras((prev) =>
+        prev.map((c) =>
+          c.id === settingsCam.id ? { ...c, streamUrl } : c
+        )
+      )
+      setShowSettings(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -42,7 +71,7 @@ export default function AdminWebcam() {
           <h1 className="text-2xl font-bold text-gradient">Live Webcam</h1>
           <p className="text-white/50 text-sm">{cameras.filter((c) => c.status === 'online').length} of {cameras.length} cameras online</p>
         </div>
-        <button className="glass-input px-4 py-2 text-sm font-semibold flex items-center gap-2">
+        <button onClick={handleRefresh} className="glass-input px-4 py-2 text-sm font-semibold flex items-center gap-2">
           <RefreshCw className="w-4 h-4" />
           Refresh
         </button>
@@ -99,7 +128,7 @@ export default function AdminWebcam() {
                 >
                   <Maximize2 className="w-4 h-4" />
                 </button>
-                <button className="p-1.5 bg-black/50 rounded hover:bg-black/70 transition-colors" title="Camera settings">
+                <button onClick={() => openSettings(camera)} className="p-1.5 bg-black/50 rounded hover:bg-black/70 transition-colors" title="Camera settings">
                   <Settings className="w-4 h-4" />
                 </button>
               </div>
@@ -132,6 +161,73 @@ export default function AdminWebcam() {
           </div>
         </div>
       </div>
+
+      {/* Camera Settings Modal */}
+      <AnimatePresence>
+        {showSettings && settingsCam && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowSettings(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass-panel p-6 w-full max-w-md"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gradient">Camera Settings</h2>
+                <button onClick={() => setShowSettings(false)} className="p-1 hover:bg-white/10 rounded"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Camera Name</label>
+                  <input type="text" value={settingsCam.name} readOnly className="glass-input w-full p-2.5 text-sm opacity-50" />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Location</label>
+                  <input type="text" value={settingsCam.location} readOnly className="glass-input w-full p-2.5 text-sm opacity-50" />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">WebRTC Stream URL</label>
+                  <input
+                    type="url"
+                    value={streamUrl}
+                    onChange={(e) => setStreamUrl(e.target.value)}
+                    className="glass-input w-full p-2.5 text-sm"
+                    placeholder="https://your-stream-server.com/stream.m3u8"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Status</label>
+                  <select
+                    value={settingsCam.status}
+                    onChange={(e) => {
+                      const newStatus = e.target.value as CameraFeed['status']
+                      setSettingsCam({ ...settingsCam, status: newStatus })
+                    }}
+                    className="glass-input w-full p-2.5 text-sm"
+                  >
+                    <option value="online">Online</option>
+                    <option value="offline">Offline</option>
+                    <option value="maintenance">Maintenance</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3 mt-6">
+                <button onClick={() => setShowSettings(false)} className="glass-input px-4 py-2 text-sm font-semibold">Cancel</button>
+                <button onClick={saveSettings} className="glass-button-neon px-4 py-2 text-sm font-semibold flex items-center gap-2">
+                  <Save className="w-4 h-4" />Save
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

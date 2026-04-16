@@ -39,7 +39,20 @@ export default function AdminAudit() {
           <h1 className="text-2xl font-bold text-gradient">Audit Log</h1>
           <p className="text-white/50 text-sm">{MOCK_AUDIT.length} entries</p>
         </div>
-        <button className="glass-input px-4 py-2 text-sm font-semibold flex items-center gap-2">
+        <button
+          onClick={() => {
+            const header = 'Timestamp,Action,Resource,Actor,Details'
+            const rows = filtered.map((e) => `${e.timestamp},${e.action},${e.resource},${e.actor},"${e.details}"`).join('\n')
+            const blob = new Blob([header + '\n' + rows], { type: 'text/csv' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`
+            a.click()
+            URL.revokeObjectURL(url)
+          }}
+          className="glass-input px-4 py-2 text-sm font-semibold flex items-center gap-2"
+        >
           <Download className="w-4 h-4" />
           Export CSV
         </button>

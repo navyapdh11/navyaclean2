@@ -1,4 +1,4 @@
-// Admin Pricing Management — update state multipliers, base prices, GST rate
+// Admin Pricing Management — update state multipliers, base prices, GST rate with full save/reset
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Save, RotateCcw, DollarSign, Percent, TrendingUp } from 'lucide-react'
@@ -16,6 +16,7 @@ export default function AdminPricing() {
   const [gstRate, setGstRate] = useState(10)
   const [unsaved, setUnsaved] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const handleMultiplierChange = (state: string, value: number) => {
     setMultipliers((prev) => ({ ...prev, [state]: value }))
@@ -29,19 +30,45 @@ export default function AdminPricing() {
     setSaved(false)
   }
 
-  const handleSave = () => {
-    // In production: save to Supabase admin_settings table
-    console.log('[Admin] Pricing saved:', { multipliers, basePrices, gstRate })
-    setUnsaved(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  const handleSave = async () => {
+    setSaving(true)
+    // Save to localStorage (persistent across sessions)
+    try {
+      localStorage.setItem('sc_pricing', JSON.stringify({ multipliers, basePrices, gstRate }))
+      // In production: also save to Supabase admin_settings table
+      // await supabase.from('admin_settings').upsert({ key: 'pricing', value: { multipliers, basePrices, gstRate } })
+      console.log('[Admin] Pricing saved:', { multipliers, basePrices, gstRate })
+      setUnsaved(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (err) {
+      console.error('[Admin] Failed to save pricing:', err)
+      alert('Failed to save pricing. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleReset = () => {
+    if (!confirm('Reset all pricing to defaults? This will discard unsaved changes.')) return
     setMultipliers(Object.fromEntries(AU_STATES.map((s) => [s, STATE_CONFIG[s].multiplier])))
     setBasePrices(Object.fromEntries(Object.entries(cleaningServices).map(([id, svc]) => [id, svc.basePrice.min])))
+    setGstRate(10)
     setUnsaved(false)
   }
+
+  // Load saved pricing on mount
+  useState(() => {
+    try {
+      const saved = localStorage.getItem('sc_pricing')
+      if (saved) {
+        const data = JSON.parse(saved)
+        if (data.multipliers) setMultipliers(data.multipliers)
+        if (data.basePrices) setBasePrices(data.basePrices)
+        if (data.gstRate) setGstRate(data.gstRate)
+      }
+    } catch { /* ignore parse errors */ }
+  })
 
   return (
     <div className="space-y-6">
@@ -52,6 +79,7 @@ export default function AdminPricing() {
           <p className="text-white/50 text-sm">Adjust state multipliers, base prices, and GST rate</p>
         </div>
         <div className="flex items-center gap-3">
+          {saved && <span className="text-neon-green text-sm font-semibold">✓ Saved!</span>}
           <button
             onClick={handleReset}
             className="glass-input px-4 py-2 text-sm font-semibold flex items-center gap-2"
@@ -61,11 +89,11 @@ export default function AdminPricing() {
           </button>
           <button
             onClick={handleSave}
-            disabled={!unsaved}
+            disabled={!unsaved || saving}
             className="glass-button-neon px-4 py-2 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4" />
-            {saved ? '✓ Saved' : 'Save Changes'}
+            {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save Changes'}
           </button>
         </div>
       </div>
@@ -81,7 +109,7 @@ export default function AdminPricing() {
           <input
             type="number"
             value={gstRate}
-            onChange={(e) => setGstRate(Number(e.target.value))}
+            onChange={(e) => { setGstRate(Number(e.target.value)); setUnsaved(true); setSaved(false) }}
             className="glass-input w-24 p-3 text-center text-lg font-bold"
             min="0"
             max="20"
