@@ -15,6 +15,8 @@ import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import CancellationPage from './pages/CancellationPage'
 import AdminLayout from './components/admin/AdminLayout'
+import AdminRoute from './components/admin/AdminRoute'
+import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminPricing from './pages/admin/AdminPricing'
 import AdminPhotos from './pages/admin/AdminPhotos'
@@ -51,17 +53,20 @@ function AppContent() {
               <Route path="/cancellation" element={<CancellationPage />} />
               <Route path="/booking" element={<QuoteBuilderApp />} />
 
-              {/* Admin Dashboard */}
+              {/* Admin Login (public) */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+
+              {/* Admin Dashboard (protected) */}
               <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="pricing" element={<AdminPricing />} />
-                <Route path="photos" element={<AdminPhotos />} />
-                <Route path="ads" element={<AdminAds />} />
-                <Route path="discounts" element={<AdminDiscounts />} />
-                <Route path="staff" element={<AdminStaff />} />
-                <Route path="webcam" element={<AdminWebcam />} />
-                <Route path="audit" element={<AdminAudit />} />
-                <Route path="settings" element={<AdminSettings />} />
+                <Route index element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                <Route path="pricing" element={<AdminRoute><AdminPricing /></AdminRoute>} />
+                <Route path="photos" element={<AdminRoute><AdminPhotos /></AdminRoute>} />
+                <Route path="ads" element={<AdminRoute><AdminAds /></AdminRoute>} />
+                <Route path="discounts" element={<AdminRoute><AdminDiscounts /></AdminRoute>} />
+                <Route path="staff" element={<AdminRoute><AdminStaff /></AdminRoute>} />
+                <Route path="webcam" element={<AdminRoute><AdminWebcam /></AdminRoute>} />
+                <Route path="audit" element={<AdminRoute><AdminAudit /></AdminRoute>} />
+                <Route path="settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
               </Route>
 
               {/* 404 */}

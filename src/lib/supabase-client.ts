@@ -20,7 +20,9 @@ export const supabase = createClient(
   supabaseAnonKey || 'placeholder-key',
   {
     auth: {
-      persistSession: false, // No auth needed for quote submission (service role)
+      persistSession: true, // Enable for admin auth
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
     },
   }
 )

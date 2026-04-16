@@ -1,0 +1,36 @@
+# Supabase CLI Configuration
+# Project: SparkleClean Pro (navyaclean2)
+# Docs: https://supabase.com/docs/guides/cli
+
+project_id = "sparkleclean-pro"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+[inbucket]
+enabled = true
+port = 54324
+
+[auth]
+enabled = true
+site_url = "https://sparkleclean.pro"
+additional_redirect_urls = ["http://localhost:5173", "http://localhost:3000"]
+jwt_expiry = 3600
+
+[analytics]
+enabled = false
+port = 54327
