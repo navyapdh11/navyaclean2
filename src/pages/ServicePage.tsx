@@ -2,7 +2,7 @@
 // Shows service details, pricing, FAQs, and booking CTA for a specific service and state
 
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft, MapPin, Clock, DollarSign, Shield } from 'lucide-react'
 import { getServiceBySlug, type ServiceDefinition, type AustralianState, AU_STATES, STATE_CONFIG, cleaningServices } from '../lib/services-au'
 import { getFAQsByService } from '../lib/faqs'
@@ -11,10 +11,53 @@ import FAQSection from '../components/content/FAQSection'
 import ComplianceFooter from '../components/compliance/ComplianceFooter'
 import SEO from '../components/SEO'
 
+// Service slug aliases — redirect common misspellings/alternate names
+const SERVICE_ALIASES: Record<string, string> = {
+  'standard': 'domestic',
+  'regular': 'domestic',
+  'house': 'domestic',
+  'home': 'domestic',
+  'residential': 'domestic',
+  'bond': 'end-of-lease',
+  'bond-clean': 'end-of-lease',
+  'bondclean': 'end-of-lease',
+  'endoflease': 'end-of-lease',
+  'end-of-lease-clean': 'end-of-lease',
+  'deep': 'deep-clean',
+  'deepclean': 'deep-clean',
+  'deep-cleaning': 'deep-clean',
+  'move': 'move-in-out',
+  'movein': 'move-in-out',
+  'move-out': 'move-in-out',
+  'move-in': 'move-in-out',
+  'office-clean': 'office',
+  'office-cleaning': 'office',
+  'retail-clean': 'retail',
+  'retail-cleaning': 'retail',
+  'carpet-clean': 'carpet',
+  'carpet-cleaning': 'carpet',
+  'window-clean': 'window',
+  'window-cleaning': 'window',
+  'pressure-wash': 'pressure',
+  'pressure-washing': 'pressure',
+  'pressure-clean': 'pressure',
+}
+
 export default function ServicePage() {
   const params = useParams<{ slug: string; state: string }>()
-  const slug = params.slug || ''
+  const navigate = useNavigate()
+  let rawSlug = params.slug || ''
   const state = (params.state as AustralianState) || 'NSW'
+
+  // Resolve alias before lookup
+  const slug = SERVICE_ALIASES[rawSlug] || rawSlug
+
+  // Redirect if alias was used
+  useEffect(() => {
+    if (SERVICE_ALIASES[rawSlug] && slug !== rawSlug) {
+      navigate(`/service/${slug}/${state}`, { replace: true })
+    }
+  }, [rawSlug, slug, state, navigate])
 
   const [service, setService] = useState<ServiceDefinition | null>(null)
   const [loading, setLoading] = useState(true)
