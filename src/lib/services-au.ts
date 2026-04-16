@@ -539,9 +539,11 @@ export const cleaningServices = {
 
 export type ServiceSlug = (typeof cleaningServices)[keyof typeof cleaningServices]['slug']
 
-/** Get service by slug */
+/** Get service by slug or id — matches both "industrial" and "industrial-cleaning" */
 export function getServiceBySlug(slug: string): ServiceDefinition | undefined {
-  return Object.values(cleaningServices).find((s) => s.slug === slug)
+  return Object.values(cleaningServices).find(
+    (s) => s.slug === slug || s.id === slug
+  )
 }
 
 /** Get all services by category */
