@@ -7,14 +7,22 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Three.js ecosystem — lazy loaded, not in initial bundle
           'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          // Animation library
           'framer': ['framer-motion'],
+          // Form handling
+          'forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          // Router
+          'router': ['react-router-dom'],
         }
       }
     },
     target: 'es2020',
     minify: 'esbuild',
     sourcemap: false,
+    // Report compressed sizes
+    reportCompressedSize: true,
   },
   optimizeDeps: {
     include: ['three', '@react-three/fiber', '@react-three/drei', 'framer-motion'],

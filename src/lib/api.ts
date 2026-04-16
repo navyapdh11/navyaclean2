@@ -1,4 +1,5 @@
 import type { QuoteForm } from '../lib/schema'
+import { submitQuoteToSupabase } from './supabase-client'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
@@ -11,12 +12,13 @@ export interface QuoteSubmission {
 export interface QuoteResponse {
   success: boolean
   quoteId?: string
+  customerId?: string
   message?: string
 }
 
 /**
- * Submit quote request to API endpoint.
- * Falls back to console logging in development mode.
+ * Submit quote request — tries Supabase first, then external API, then dev fallback.
+ * Priority: Supabase > External API > console.log (dev)
  */
 export async function submitQuoteRequest(data: QuoteForm, quote: number): Promise<QuoteResponse> {
   const payload: QuoteSubmission = {
@@ -25,7 +27,29 @@ export async function submitQuoteRequest(data: QuoteForm, quote: number): Promis
     timestamp: new Date().toISOString(),
   }
 
-  // If API URL is configured, make real request
+  // ── Priority 1: Supabase (primary persistence layer)
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+  if (supabaseUrl && supabaseKey) {
+    try {
+      const result = await submitQuoteToSupabase(data, quote)
+      if (result.success) {
+        return {
+          success: true,
+          quoteId: result.quoteId,
+          customerId: result.customerId,
+          message: result.quoteId ? `Quote #${result.quoteId.slice(0, 8)} saved` : 'Quote saved',
+        }
+      }
+      // If Supabase failed, fall through to API or dev fallback
+      console.error('[API] Supabase submission failed, trying fallback:', result.error)
+    } catch (err) {
+      console.error('[API] Supabase error, trying fallback:', err)
+    }
+  }
+
+  // ── Priority 2: External API endpoint
   if (API_BASE_URL) {
     try {
       const response = await fetch(`${API_BASE_URL}/api/quotes`, {
@@ -38,14 +62,18 @@ export async function submitQuoteRequest(data: QuoteForm, quote: number): Promis
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
-      return await response.json()
+      const apiResult = await response.json()
+      return {
+        success: true,
+        quoteId: apiResult.quoteId,
+        message: apiResult.message || 'Quote submitted via API',
+      }
     } catch (error) {
-      console.error('Quote submission failed:', error)
-      // Fall through to dev mode
+      console.error('[API] External API failed, using dev fallback:', error)
     }
   }
 
-  // Development fallback
+  // ── Priority 3: Development fallback
   console.log('[DEV MODE] Quote submitted:', payload)
   return { success: true, message: 'Development mode — quote logged to console' }
 }

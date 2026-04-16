@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Sparkles, Zap, Shield, Leaf, Clock, Star, Phone,
-  CheckCircle, User, Sun, Moon,
+  User, Sun, Moon,
 } from 'lucide-react'
 
 // Local imports
@@ -17,6 +17,7 @@ import { useTheme } from './hooks/useTheme'
 import ServiceCard from './components/ServiceCard'
 import FaqItem from './components/FaqItem'
 import TrustBadge from './components/TrustBadge'
+import BookingConfirmation from './components/BookingConfirmation'
 
 // ─── Main App ─────────────────────────────────────────────────
 export default function App() {
@@ -24,6 +25,8 @@ export default function App() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [quoteId, setQuoteId] = useState<string | undefined>()
+  const [customerId, setCustomerId] = useState<string | undefined>()
   const { theme, toggleTheme } = useTheme()
 
   const { register, handleSubmit, control, formState: { errors }, reset, setValue, watch } = useForm<QuoteForm>({
@@ -46,6 +49,8 @@ export default function App() {
       if (!response.success) {
         throw new Error(response.message || 'Submission failed')
       }
+      setQuoteId(response.quoteId)
+      setCustomerId(response.customerId)
       setSubmitted(true)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An unexpected error occurred'
@@ -58,6 +63,8 @@ export default function App() {
   const handleReset = useCallback(() => {
     setSubmitted(false)
     setSubmitError(null)
+    setQuoteId(undefined)
+    setCustomerId(undefined)
     reset(defaultValues)
   }, [reset])
 
@@ -174,33 +181,17 @@ export default function App() {
 
           <AnimatePresence mode="wait">
             {submitted ? (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-12"
-                role="status"
-                aria-live="polite"
-              >
-                <CheckCircle className="w-20 h-20 text-neon-green mx-auto mb-4" aria-hidden="true" />
-                <h3 className="text-2xl sm:text-3xl font-bold text-neon-green mb-2">Quote Confirmed!</h3>
-                <p className="text-4xl sm:text-5xl font-black text-gradient my-4" aria-label={`Your quote is ${priceBreakdown.total} including GST`}>
-                  {priceBreakdown.total}
-                </p>
-                <p className="text-white/60 text-sm mb-2">
-                  Subtotal: {priceBreakdown.subtotal} · GST: {priceBreakdown.gst}
-                </p>
-                <p className="text-white/70 mb-2">Thank you! We'll contact you shortly to schedule your clean.</p>
-                <p className="text-white/50 text-sm mb-6">A confirmation will be sent to your email.</p>
-                <button
-                  onClick={handleReset}
-                  className="glass-button-neon px-8 py-3"
-                  aria-label="Get another quote"
-                >
-                  Get Another Quote
-                </button>
-              </motion.div>
+              <BookingConfirmation
+                key="confirmation"
+                quoteId={quoteId}
+                customerId={customerId}
+                total={priceBreakdown.total}
+                gst={priceBreakdown.gst}
+                subtotal={priceBreakdown.subtotal}
+                customerName={watch('name') || 'Customer'}
+                customerEmail={watch('email') || 'your email'}
+                onReset={handleReset}
+              />
             ) : (
               <motion.form
                 key="form"
