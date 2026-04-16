@@ -13,12 +13,12 @@ export default function TermsPage() {
       <article className="max-w-3xl mx-auto px-4 py-8 space-y-8 text-white/70 leading-relaxed">
         <motion.div className="glass-panel p-6" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <h2 className="text-xl font-bold text-white mb-3">1. Acceptance of Terms</h2>
-          <p>By accessing or using SparkleClean Pro's services, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
+          <p>By accessing or using Aasta Clean Pro's services, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
         </motion.div>
 
         <motion.div className="glass-panel p-6" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <h2 className="text-xl font-bold text-white mb-3">2. Services</h2>
-          <p>SparkleClean Pro provides residential and commercial cleaning services in the Greater Sydney Metropolitan area. Services include standard cleaning, deep cleaning, carpet cleaning, window cleaning, and oven cleaning.</p>
+          <p>Aasta Clean Pro provides residential and commercial cleaning services in the Greater Sydney Metropolitan area. Services include standard cleaning, deep cleaning, carpet cleaning, window cleaning, and oven cleaning.</p>
           <p className="mt-2">All prices quoted include 10% Goods and Services Tax (GST) as required by Australian law.</p>
         </motion.div>
 
@@ -41,7 +41,7 @@ export default function TermsPage() {
 
         <motion.div className="glass-panel p-6" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <h2 className="text-xl font-bold text-white mb-3">6. Liability</h2>
-          <p>SparkleClean Pro holds $20M public liability insurance. We are not liable for pre-existing damage or wear and tear. Claims must be reported within 24 hours of service completion.</p>
+          <p>Aasta Clean Pro holds $20M public liability insurance. We are not liable for pre-existing damage or wear and tear. Claims must be reported within 24 hours of service completion.</p>
         </motion.div>
 
         <motion.div className="glass-panel p-6" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>

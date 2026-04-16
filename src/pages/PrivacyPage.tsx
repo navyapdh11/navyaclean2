@@ -42,7 +42,7 @@ export default function PrivacyPage() {
           },
           {
             title: '8. Your Rights',
-            content: 'You may request access to, correction of, or deletion of your personal data by contacting us at contact@sparkleclean.pro. We will respond within 30 days as required by Australian law.',
+            content: 'You may request access to, correction of, or deletion of your personal data by contacting us at aastacleanpro@gmail.com. We will respond within 30 days as required by Australian law.',
           },
           {
             title: '9. Changes to This Policy',
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
           },
           {
             title: '10. Contact',
-            content: 'For privacy-related enquiries, contact us at contact@sparkleclean.pro or call +61 2 9000 0000.',
+            content: 'For privacy-related enquiries, contact us at aastacleanpro@gmail.com or call 08 6226 6262.',
           },
         ].map((section, i) => (
           <motion.div

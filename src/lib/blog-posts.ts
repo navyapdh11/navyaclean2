@@ -99,7 +99,7 @@ For most Sydney households, **fortnightly cleaning** offers the best balance of 
     excerpt: 'Discover the professional-grade, environmentally safe products that keep your family and pets safe.',
     content: `# Eco-Friendly Cleaning Products: What We Use & Why
 
-At SparkleClean Pro, we use certified eco-friendly products that are safe for families, children, and pets while delivering professional-grade results.
+At Aasta Clean Pro, we use certified eco-friendly products that are safe for families, children, and pets while delivering professional-grade results.
 
 ## Our Eco-Certified Products
 
@@ -312,7 +312,7 @@ All cleaning businesses in Australia must comply with Work Health and Safety (WH
 
 ## Our Commitment
 
-SparkleClean Pro maintains full WHS compliance across all states. Our cleaners are trained, certified, and regularly audited for safety standards.`,
+Aasta Clean Pro maintains full WHS compliance across all states. Our cleaners are trained, certified, and regularly audited for safety standards.`,
     category: 'compliance',
     tags: ['whs', 'compliance', 'commercial-cleaning', 'safety'],
     serviceSlug: 'commercial-cleaning',

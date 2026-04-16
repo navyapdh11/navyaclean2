@@ -111,7 +111,7 @@ export default function App() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          ✨ SparkleClean Pro
+          ✨ Aasta Clean Pro
         </motion.h1>
         <motion.p
           className="relative text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-8"
@@ -575,7 +575,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="px-4 py-8 text-center text-white/70 text-sm border-t border-white/10">
-        <p>© 2026 SparkleClean Pro. All rights reserved. | ABN 12 345 678 901</p>
+        <p>© 2026 Aasta Clean Pro. All rights reserved. | ABN 12 345 678 901</p>
         <p className="mt-1">Sydney, NSW | <a href={EMAIL_LINK} className="text-neon-blue hover:underline">{EMAIL_DISPLAY}</a> | <a href={PHONE_LINK} className="text-neon-blue hover:underline">{PHONE_DISPLAY}</a></p>
         <div className="mt-3 flex justify-center gap-4 text-xs text-white/50">
           <a href="#terms" className="hover:text-neon-blue transition-colors">Terms of Service</a>

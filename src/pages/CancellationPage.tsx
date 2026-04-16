@@ -42,8 +42,8 @@ export default function CancellationPage() {
           <h2 className="text-xl font-bold text-white mb-3">How to Cancel</h2>
           <p>To cancel or reschedule a booking, contact us:</p>
           <ul className="mt-3 space-y-2">
-            <li>📞 Call: <a href="tel:+61290000000" className="text-neon-blue underline">+61 2 9000 0000</a></li>
-            <li>📧 Email: <a href="mailto:contact@sparkleclean.pro" className="text-neon-blue underline">contact@sparkleclean.pro</a></li>
+            <li>📞 Call: <a href="tel:+61862266262" className="text-neon-blue underline">08 6226 6262</a></li>
+            <li>📧 Email: <a href="mailto:aastacleanpro@gmail.com" className="text-neon-blue underline">aastacleanpro@gmail.com</a></li>
           </ul>
           <p className="mt-3 text-sm">Please provide your booking reference number when cancelling.</p>
         </motion.div>

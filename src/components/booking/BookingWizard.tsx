@@ -441,7 +441,7 @@ function AddressContactStep({ control, errors }: any) {
             name="address.street"
             control={control}
             render={({ field }) => (
-              <input {...field} className="glass-input w-full p-3" placeholder="123 Clean Street" />
+              <input {...field} className="glass-input w-full p-3" placeholder="51 Tate Street" />
             )}
           />
           {errors.address?.street && (

@@ -508,8 +508,8 @@ export default function ServicePage() {
             {/* Contact Card */}
             <div className="glass-panel p-5 text-center">
               <p className="text-xs text-white/40 mb-2">Need help choosing?</p>
-              <a href="tel:+61290000000" className="text-lg font-bold text-neon-blue hover:text-neon-green transition-colors">
-                📞 +61 2 9000 0000
+              <a href="tel:+61862266262" className="text-lg font-bold text-neon-blue hover:text-neon-green transition-colors">
+                📞 08 6226 6262
               </a>
               <p className="text-xs text-white/30 mt-1">Mon–Fri 7am–8pm · Sat 8am–6pm</p>
             </div>
@@ -531,12 +531,12 @@ export default function ServicePage() {
           <p className="text-lg text-white/70">Get your instant quote and book in 60 seconds. No payment required until after service.</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/booking" className="glass-button-neon px-8 py-4 text-lg font-bold">3D Quote Builder →</Link>
-            <a href="tel:+61290000000" className="glass-input px-8 py-4 text-lg font-semibold flex items-center gap-2"><Phone className="w-5 h-5" /> Call Now</a>
+            <a href="tel:+61862266262" className="glass-input px-8 py-4 text-lg font-semibold flex items-center gap-2"><Phone className="w-5 h-5" /> Call Now</a>
           </div>
         </div>
       </section>
 
-      <ComplianceFooter state={state} service={service} businessDetails={{ abn: '12 345 678 901', insurance: 'Public Liability $20M', whs: true }} />
+      <ComplianceFooter state={state} service={service} businessDetails={{ abn: '12 345 678 901', address: '51 Tate Street, West Leederville WA 6007', phone: '08 6226 6262', email: 'aastacleanpro@gmail.com', insurance: 'Public Liability $20M', whs: true }} />
     </>
   )
 }

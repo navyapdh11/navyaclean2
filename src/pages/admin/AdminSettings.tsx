@@ -6,12 +6,12 @@ import { Save, Mail, BarChart3, Globe, Shield, Database, CheckCircle } from 'luc
 export default function AdminSettings() {
   const [saved, setSaved] = useState(false)
   const [settings, setSettings] = useState({
-    siteName: 'SparkleClean Pro',
+    siteName: 'Aasta Clean Pro',
     siteUrl: 'https://sparkleclean.pro',
-    phone: '+61 2 9000 0000',
-    email: 'contact@sparkleclean.pro',
+    phone: '+61 8 6226 6262',
+    email: 'aastacleanpro@gmail.com',
     abn: '12 345 678 901',
-    address: '123 Clean Street, Sydney NSW 2000',
+    address: '51 Tate Street, West Leederville WA 6007',
     // Integrations
     supabaseUrl: '',
     supabaseKey: '',

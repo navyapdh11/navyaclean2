@@ -12,6 +12,9 @@ interface ComplianceFooterProps {
     abn: string
     insurance: string
     whs: boolean
+    address?: string
+    phone?: string
+    email?: string
   }
 }
 
@@ -87,6 +90,9 @@ export default function ComplianceFooter({
     abn: '12 345 678 901',
     insurance: 'Public Liability $20M',
     whs: true,
+    address: '51 Tate Street, West Leederville WA 6007',
+    phone: '08 6226 6262',
+    email: 'aastacleanpro@gmail.com',
   },
 }: ComplianceFooterProps) {
   const compliance = STATE_AUTHORITIES[state]
@@ -205,7 +211,7 @@ export default function ComplianceFooter({
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-xs">
           <p>
-            © {new Date().getFullYear()} SparkleClean Pro Australia. All rights reserved.
+            © {new Date().getFullYear()} Aasta Clean Pro Australia. All rights reserved.
           </p>
           <p className="mt-2">
             All prices include 10% GST. Terms and conditions apply. | 

@@ -58,10 +58,12 @@ export const TRUST_BADGES: TrustBadgeEntry[] = [
   { icon: 'MapPin' as const, title: 'Sydney Wide', desc: 'Metro Coverage', color: '#e60073' },
 ]
 
-export const PHONE_DISPLAY = '+61 2 9000 0000'
-export const PHONE_LINK = 'tel:+61290000000'
-export const EMAIL_DISPLAY = 'contact@sparkleclean.pro'
-export const EMAIL_LINK = 'mailto:contact@sparkleclean.pro'
+export const PHONE_DISPLAY = '08 6226 6262'
+export const PHONE_LINK = 'tel:+61862266262'
+export const MOBILE_DISPLAY = '0405 866 459'
+export const MOBILE_LINK = 'tel:+61405866459'
+export const EMAIL_DISPLAY = 'aastacleanpro@gmail.com'
+export const EMAIL_LINK = 'mailto:aastacleanpro@gmail.com'
 
 // ──────────────────────────────────────────────────────────────
 // Site Configuration (used by SEO, sitemap, etc.)
@@ -71,23 +73,24 @@ export const SITE_CONFIG = {
   // Site URLs
   siteUrl: import.meta.env.VITE_SITE_URL || 'https://sparkleclean.pro',
   // Business Info
-  businessName: 'SparkleClean Pro',
-  description: 'Premium 3D Cleaning Quote Builder — Transparent Pricing, Instant Results',
-  phone: '+61-2-9000-0000',
-  email: 'contact@sparkleclean.pro',
+  businessName: 'Aasta Clean Pro',
+  description: 'Premium Professional Cleaning Services in Perth — Transparent Pricing, Instant Results',
+  phone: '+61 8 6226 6262',
+  mobile: '+61 405 866 459',
+  email: 'aastacleanpro@gmail.com',
   abn: '12 345 678 901',
   // Address
   address: {
-    street: '123 Clean Street',
-    city: 'Sydney',
-    state: 'NSW',
-    postcode: '2000',
+    street: '51 Tate Street',
+    city: 'West Leederville',
+    state: 'WA',
+    postcode: '6007',
     country: 'AU',
   },
-  // Geo coordinates
+  // Geo coordinates (West Leederville, Perth)
   geo: {
-    latitude: -33.8688,
-    longitude: 151.2093,
+    latitude: -31.9403,
+    longitude: 115.8235,
   },
   // Social profiles
   social: {

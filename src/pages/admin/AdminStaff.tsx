@@ -17,11 +17,11 @@ interface StaffMember {
 }
 
 const MOCK_STAFF: StaffMember[] = [
-  { id: '1', name: 'Admin User', email: 'admin@sparkleclean.pro', phone: '+61 400 000 001', role: 'admin', department: 'Management', isActive: true, jobsCompleted: 0, rating: 0, serviceAreas: ['Sydney CBD', 'Parramatta', 'Bondi'] },
-  { id: '2', name: 'Sarah Mitchell', email: 'sarah@sparkleclean.pro', phone: '+61 400 000 002', role: 'manager', department: 'Operations', isActive: true, jobsCompleted: 287, rating: 4.9, serviceAreas: ['Sydney CBD', 'North Shore'] },
-  { id: '3', name: 'James Chen', email: 'james@sparkleclean.pro', phone: '+61 400 000 003', role: 'cleaner', department: 'Residential', isActive: true, jobsCompleted: 456, rating: 4.8, serviceAreas: ['Bondi', 'Manly', 'Cronulla'] },
-  { id: '4', name: 'Emma Green', email: 'emma@sparkleclean.pro', phone: '+61 400 000 004', role: 'cleaner', department: 'Commercial', isActive: true, jobsCompleted: 312, rating: 4.7, serviceAreas: ['Parramatta', 'Liverpool'] },
-  { id: '5', name: 'Mike Johnson', email: 'mike@sparkleclean.pro', phone: '+61 400 000 005', role: 'dispatcher', department: 'Logistics', isActive: false, jobsCompleted: 0, rating: 0, serviceAreas: ['All Sydney'] },
+  { id: '1', name: 'Admin User', email: 'admin@aastacleanpro.com', phone: '+61 400 000 001', role: 'admin', department: 'Management', isActive: true, jobsCompleted: 0, rating: 0, serviceAreas: ['Sydney CBD', 'Parramatta', 'Bondi'] },
+  { id: '2', name: 'Sarah Mitchell', email: 'sarah@aastacleanpro.com', phone: '+61 400 000 002', role: 'manager', department: 'Operations', isActive: true, jobsCompleted: 287, rating: 4.9, serviceAreas: ['Sydney CBD', 'North Shore'] },
+  { id: '3', name: 'James Chen', email: 'james@aastacleanpro.com', phone: '+61 400 000 003', role: 'cleaner', department: 'Residential', isActive: true, jobsCompleted: 456, rating: 4.8, serviceAreas: ['Bondi', 'Manly', 'Cronulla'] },
+  { id: '4', name: 'Emma Green', email: 'emma@aastacleanpro.com', phone: '+61 400 000 004', role: 'cleaner', department: 'Commercial', isActive: true, jobsCompleted: 312, rating: 4.7, serviceAreas: ['Parramatta', 'Liverpool'] },
+  { id: '5', name: 'Mike Johnson', email: 'mike@aastacleanpro.com', phone: '+61 400 000 005', role: 'dispatcher', department: 'Logistics', isActive: false, jobsCompleted: 0, rating: 0, serviceAreas: ['All Sydney'] },
 ]
 
 const emptyStaff = (): Omit<StaffMember, 'id' | 'jobsCompleted' | 'rating'> => ({
@@ -229,7 +229,7 @@ export default function AdminStaff() {
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     className="glass-input w-full p-2.5 text-sm"
-                    placeholder="email@sparkleclean.pro"
+                    placeholder="email@aastacleanpro.com"
                   />
                 </div>
                 <div>

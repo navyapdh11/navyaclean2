@@ -29,7 +29,7 @@ export default function InstallPrompt({ onInstall, onDismiss }: InstallPromptPro
 
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-white text-sm mb-1">
-                Install SparkleClean Pro
+                Install Aasta Clean Pro
               </h3>
               <p className="text-white/60 text-xs mb-3">
                 Add to your home screen for quick access and offline support.

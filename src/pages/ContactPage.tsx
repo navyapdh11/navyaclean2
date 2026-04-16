@@ -57,7 +57,7 @@ export default function ContactPage() {
                   <MapPin className="w-5 h-5 text-neon-green flex-shrink-0" aria-hidden="true" />
                   <div>
                     <p className="text-sm text-white/50">Address</p>
-                    <p className="text-white font-medium">123 Clean Street, Sydney NSW 2000</p>
+                    <p className="text-white font-medium">51 Tate Street, West Leederville WA 6007</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
